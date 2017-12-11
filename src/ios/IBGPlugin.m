@@ -6,58 +6,53 @@
  */
 @implementation IBGPlugin
 
+- (void)pluginInitialize
+{
+  NSString* applicationToken = [self.commandDelegate.settings objectForKey:@"instabug_ios_token"];
+  NSString* invEvent = [self.commandDelegate.settings objectForKey:@"invocation_event"];
+
+  IBGInvocationEvent invocationEvent = 0;
+
+  if ([invEvent isKindOfClass:[NSString class]]) {
+      invocationEvent = [self parseInvocationEvent:invEvent];
+  }
+
+  if ([applicationToken length] == 0) {
+    NSLog(@"Empty application token.");
+  } else if (!invocationEvent) {
+    NSLog(@"Empty invocation event.");
+  } else {
+    // Initialize Instabug
+
+    NSLog([NSString stringWithFormat:@"Starting Instabug with token: %@ and event: %@", applicationToken, invEvent]);
+    [Instabug startWithToken:applicationToken invocationEvent:invocationEvent];
+//    [Instabug setSDKDebugLogsLevel:IBGSDKDebugLogsLevelVerbose];
+  }
+}
+
 /**
- * Intializes Instabug and sets provided options.
+ * Allows setting many options with one method call.
+ *
+ *  emailRequired: bool
+ *  commentRequired: bool
+ *  defaultInvocationMethod: string
+ *  shakingThresholdIPhone: float
+ *  shakingThresholdIPad: float
+ *  floatingButtonEdge: float
+ *  floatingButtonOffset: float
+ *  enableTrackingUserSteps: bool
+ *  enablePushNotifications: bool
+ *  enableIntroDialog: bool
+ *  colorTheme: string
  *
  * @param {CDVInvokedUrlCommand*} command
  *        The command sent from JavaScript
  */
-- (void) activate:(CDVInvokedUrlCommand*)command
+- (void) setOptions:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* result;
+    [self applyOptions:[command argumentAtIndex:0]];
 
-    NSDictionary* tokensForPlatforms = [command argumentAtIndex:0];
-
-    if (tokensForPlatforms) {
-        NSString* token = [tokensForPlatforms objectForKey:@"ios"];
-
-        if ([token length] > 0) {
-            id invEvent = [command argumentAtIndex:1];
-            IBGInvocationEvent invocationEvent = 0;
-
-            if ([invEvent isKindOfClass:[NSString class]]) {
-                invocationEvent = [self parseInvocationEvent:invEvent];
-            } else if ([invEvent isKindOfClass:[NSDictionary class]]) {
-                // Desired invocation event may be different across platforms
-                // and can be specified as such
-                invocationEvent = [self parseInvocationEvent: [invEvent objectForKey:@"ios"]];
-            }
-
-            if (!invocationEvent) {
-                // Instabug iOS SDK requires invocation event for initialization
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                           messageAsString:@"An invocation event must be provided."];
-            } else {
-                // Initialize Instabug
-                [Instabug startWithToken:token invocationEvent:invocationEvent];
-
-                // Apply provided options
-                [self applyOptions:[command argumentAtIndex:2]];
-
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            }
-        } else {
-            // Without a token, Instabug cannot be initialized.
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                       messageAsString:@"An application token must be provided."];
-        }
-    } else {
-        // Without a token, Instabug cannot be initialized.
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                   messageAsString:@"An application token must be provided."];
-    }
-
-    [self.commandDelegate sendPluginResult:result callbackId:[command callbackId]];
+    [self sendSuccessResult:command];
 }
 
 /**

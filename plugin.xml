@@ -32,11 +32,15 @@
 
     <!-- android -->
     <platform name="android">
+        <preference name="INSTABUG_ANDROID_TOKEN" default="x"/>
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="IBGPlugin">
                 <param name="android-package" value="com.instabug.cordova.plugin.IBGPlugin"/>
                 <param name="onload" value="true"/>
             </feature>
+            <preference name="INSTABUG_ANDROID_TOKEN" value="$INSTABUG_ANDROID_TOKEN"/>
+            <preference name="INVOCATION_EVENT" value="$INVOCATION_EVENT"/>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -82,13 +86,19 @@
 
     </platform>
 
+    <preference name="INVOCATION_EVENT" default="shake" />
+
     <!-- ios -->
     <platform name="ios">
+        <preference name="INSTABUG_IOS_TOKEN" default="x"/>
+
         <config-file target="config.xml" parent="/*">
             <feature name="IBGPlugin">
                 <param name="ios-package" value="IBGPlugin" />
                 <param name="onload" value="true" />
             </feature>
+            <preference name="INSTABUG_IOS_TOKEN" value="$INSTABUG_IOS_TOKEN"/>
+            <preference name="INVOCATION_EVENT" value="$INVOCATION_EVENT"/>
         </config-file>
 
         <framework src="src/ios/Instabug.framework" custom="true" embed="true" />

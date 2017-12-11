@@ -2,7 +2,7 @@
 
 @interface IBGPlugin : CDVPlugin 
 
-- (void) activate:(CDVInvokedUrlCommand*)command;
+- (void)pluginInitialize;
 
 - (void) invoke:(CDVInvokedUrlCommand*)command;
 
@@ -25,5 +25,7 @@
 - (void) setLocale:(CDVInvokedUrlCommand*)command;
 
 - (void) setUserAttribute:(CDVInvokedUrlCommand*)command;
+
+- (void) setOptions:(CDVInvokedUrlCommand*)command;
 
 @end

@@ -395,6 +395,30 @@
 }
 
 /**
+ * Set custom user attribute that are sent back with the next feedback, bug or crash.
+ *
+ * @param {CDVInvokedUrlCommand*} command
+ *        The command sent from JavaScript
+ */
+- (void) setUserAttribute:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* result;
+
+    NSString* key = [command argumentAtIndex:0];
+    NSString* value = [command argumentAtIndex:1];
+
+    if (key && value) {
+        [Instabug setUserAttribute:value withKey:key];
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } else {
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                   messageAsString:@"A key and value must be provided."];
+    }
+
+    [self.commandDelegate sendPluginResult:result callbackId:[command callbackId]];
+}
+
+/**
  * Convenience method for setting whether the email
  * field is validated or not.
  *

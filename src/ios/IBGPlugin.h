@@ -24,4 +24,6 @@
 
 - (void) setLocale:(CDVInvokedUrlCommand*)command;
 
+- (void) setUserAttribute:(CDVInvokedUrlCommand*)command;
+
 @end

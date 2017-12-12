@@ -66,6 +66,15 @@ public class IBGPlugin extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
+        new Instabug.Builder(
+                this.cordova.getActivity().getApplication(),
+                preferences.getString("INSTABUG_ANDROID_TOKEN", null),
+                parseInvocationEvent(preferences.getString("INVOCATION_EVENT", "shake"))
+        )
+          .build();
+
+        Instabug.setPromptOptionsEnabled(false, true, false);
+
         // Initialize intent so that extras can be attached subsequently
         activationIntent = new Intent(cordova.getActivity(), com.instabug.cordova.plugin.IBGPluginActivity.class);
 
@@ -88,7 +97,10 @@ public class IBGPlugin extends CordovaPlugin {
     public boolean execute(final String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
         if ("activate".equals(action)) {
-            activate(callbackContext, args);
+            activate(callbackContext, args.optJSONObject(2));
+
+        } else if ("setOptions".equals(action)) {
+            activate(callbackContext, args.optJSONObject(0));
 
         } else if ("invoke".equals(action)) {
             invoke(callbackContext, args.optString(0));
@@ -173,8 +185,8 @@ public class IBGPlugin extends CordovaPlugin {
      * @param callbackContext
      *        Used when calling back into JavaScript
      */
-    private void activate(final CallbackContext callbackContext, JSONArray args) {
-        this.options = args.optJSONObject(2);
+    private void activate(final CallbackContext callbackContext, JSONObject options) {
+        this.options = options;
         if (options != null) {
             // Attach extras
             applyOptions();
@@ -719,5 +731,4 @@ public class IBGPlugin extends CordovaPlugin {
             return InstabugVideoRecordingButtonCorner.BOTTOM_RIGHT;
         } else return null;
     }
-
 }

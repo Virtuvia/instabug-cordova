@@ -82,7 +82,6 @@
 
         <source-file src="src/android/IBGPluginActivity.java" target-dir="src/com/instabug/cordova/plugin"/>
         <source-file src="src/android/IBGPlugin.java" target-dir="src/com/instabug/cordova/plugin"/>
-        <source-file src="src/android/MyApplication.java" target-dir="src/com/instabug/cordova/plugin"/>
 
     </platform>
 
